@@ -4,7 +4,18 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "../../SendGrid-Conf/vendor/autoload.ph
 ${basename(__FILE__, ".php")} = function () {
     try {
         if ($this->get_request_method() == "POST") {
-            if (isset($this->_request['username']) and isset($this->_request['email']) && isset($this->_request['toemail']) && isset($this->_request['subject']) && isset($this->_request['message'])) {
+            $redis = new Redis();
+            $redis->connect('127.0.0.1', 6379);
+
+            $ip = $_SERVER['REMOTE_ADDR'];
+            $ip = preg_replace('/[^a-zA-Z0-9 ]/', '', $ip);
+            $ip = str_replace(' ', '', $ip);
+            $redisKey = $ip . "_sendmail";
+            $requestCount = $redis->get($redisKey);
+
+            if ($requestCount === false || $requestCount < 5) {
+                $redis->incr($redisKey);
+                $redis->expire($redisKey, 1800);
                 $secure_data = file_get_contents($_SERVER['DOCUMENT_ROOT'] . "../../SendGrid-Conf/env.json");
                 $secure_data = json_decode($secure_data, true);
 
@@ -48,16 +59,15 @@ ${basename(__FILE__, ".php")} = function () {
                     ];
                     $this->response($this->json($data), 417);
                 }
-                $data = [
-                    "Status" => "Invalid Inputs: isset failed"
-                ];
-                $this->response($this->json($data), 417);
             } else {
                 $data = [
-                    "Status" => "Invalid Inputs: isset failed"
+                    "Status" => "Rate Limit Exceeded",
+                    "Status Code" => 429,
+                    "Message" => "You have exceeded the rate limit of 5 requests in 30 minutes."
                 ];
-                $this->response($this->json($data), 417);
+                $this->response($this->json($data), 429);
             }
+            $redis->close();
         } else {
             $data = [
                 "Status" => "Method not allowed....",

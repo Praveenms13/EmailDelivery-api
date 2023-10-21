@@ -1,85 +1,149 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Send Email API</title>
+    <title>Email Delivery API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f2f2f2;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        h2 {
+            color: #666;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 10px;
+        }
+
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+        }
+
+        code {
+            font-family: Consolas, monospace;
+            font-size: 14px;
+        }
+
+        .endpoint {
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .endpoint h2 {
+            margin-bottom: 5px;
+            color: #FF7F50;
+        }
+
+        a {
+            color: #FF7F50;
+        }
+
+        .endpoint p {
+            color: #888;
+        }
+
+        .example {
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .get-method {
+            color: #228B22;
+        }
+
+        .request {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .response {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 
 <body>
-    <h1 id="api-based-notes-app-under-development">Send Email API by SendGrid Email Provider</h1>
-    <h3 id="api-base-url-https-apis-selfmade-one">API Base Url: <a
-            href="https://sendemailapi.praveenms.site/">https://sendemailapi.praveenms.site/</a></h3>
-    <h3 id="view-">View :</h3>
-    <p>This API is used to send emails by making a simple post request to the api.
-        which follows OAuth 2.0, REST API Protocols, AS of no login or signup is required only a API key is required =>
-        Get it from <a href="https://www.praveenms.site">Praveen</a></p>
-    <hr>
-    <h2 id="login-api">Email API</h2>
-    <hr>
-    <h3 id="request">Request</h3>
-    <pre><code>POST <span class="hljs-regexp">/api/sendmail/</span>/mail
-</code></pre>
-    <hr>
-    <h4 id="form-data">Form Data</h4>
-    <table>
-        <thead>
-            <tr>
-                <th>Attribute</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Username</td>
-                <td>Can be username or email address to be displayed in gmail</td>
-            </tr>
-            <tr>
-                <td>email</td>
-                <td>Your Email to be displayed in the recievers side</td>
-            </tr>
-            <tr>
-                <td>toemail</td>
-                <td>recipientEmail the mail subject and body to be sent</td>
-            </tr>
-            <tr>
-                <td>subject</td>
-                <td>subject of the mail</td>
-            </tr>
-            <tr>
-                <td>messaege</td>
-                <td>body of the mail</td>
-            </tr>
-        </tbody>
-    </table>
-    <pre><code><span class="hljs-symbol">Authorization:</span> Bearer <span class="hljs-params">&lt;secret_token&gt;</span>
-</code></pre>
-    <hr>
-    <h5 id="example-">Example:</h5>
-    <pre><code>Authorization: Bearer secret-key
-</code>
-</pre>
-    <hr>
-    <h4 id="response-examples">Request Examples</h4>
-    <h5 id="200">202</h5>
-    <img width="50%" src="req.png" alt="">
-    <img width="50%" src="apikey.png" alt="">
+    <h1>Email Delivery API by <a href="https://www.praveenms.site">Praveen</a></h1>
+    <p>Welcome to the Email Delivery API. This API allows you to send emails from your apps or web projects by making a
+        simple post api request. Please refer to the
+        documentation below for details on how to interact with the API.</p>
+    <li>The API is rate limited to 5 requests every 30 minutes. </li>
+    <li>All user submitted data (Usernames, email, subject, message, to emails) are erased on a regular basis.</li>
+    <li>This API is just for education purposes, please don't
+        rely on it for production. </li>
+    <h2>Authentication</h2>
+    <ul>
+        <li><strong>API Key Authentication</strong> is required for the endpoint to authenticate. Ask praveen personally
+            for the API Keys.</li>
+        <li><strong>Basically a Bearer Token Authentication</strong>
+        </li>
+    </ul>
+    <br>
+    <h2>API Base URL</h2>
+    <p><strong>https://sendemailapi.praveenms.site/</strong></p>
+    </br>
+    <div class="endpoint">
+        <h2 class="get-method">POST /api/sendmail/mail</h2>
+        <p>To send the new mail, submit the following datas in POST method.</p>
+        <p><strong>Request Body:</strong></p>
+        <pre><code>{
+  "username": "The username of the user.",
+  "email": "Your email to display it in the mail sent to the recipient.",
+  "toemail": "The recipient's email.",
+  "subject": "Subject of the email.",
+  "message": "Body of the email."
+}</code></pre>
+<p><strong>Bearer Token (Get the API Key from praveen) :</strong></p>
+        <pre>
+            <img width="50%" src="apikey.png" alt="">
+        </pre>
 
-    </pre>
-    <hr>
-    <h4 id="response-examples">Response Examples</h4>
-    <h5 id="200">202</h5>
-    <pre><code>{
-    <span class="hljs-attr">"Status"</span>: <span class="hljs-string">"Mail Sent Successfully"</span>,
-    <span class="hljs-attr">"Status Code"</span>: <span class="hljs-string">"202"</span>
-}
-</code></pre>
-    <h5 id="406">417</h5>
-    <pre><code>{
-    <span class="hljs-attr">"Status"</span>: <span class="hljs-string">"Invalid Inputs: isset failed"</span>
-}
-</code></pre>
+            </div>
+            <p><strong>Example Response 1 :</strong></p>
+            <div class="response">
+                <pre><code>{
+  "Status": "Mail Sent Successfully",
+  "Status Code": 202
+}</code></pre>
+    </div>
+    <p><strong>Example Response 2 :</strong></p>
+    <div class="response">
+        <pre><code>{
+    "Status": "Rate Limit Exceeded",
+    "Status Code": 429,
+    "Message": "You have exceeded the rate limit of 5 requests in 30 minutes."
+}</code></pre>
+    </div>
+    </div>
+    </div>
+
 </body>
+<footer>
+    Copyright © <a href="https://www.praveenms.site">Praveen</a>
+</footer>
 
 </html>
