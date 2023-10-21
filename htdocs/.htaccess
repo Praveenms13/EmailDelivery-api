@@ -1,0 +1,19 @@
+Header add Access-Control-Allow-Origin: *
+Header add Access-Control-Allow-Methods: *
+Header add Access-Control-Request-Headers: *
+RewriteEngine On
+RewriteBase /
+
+RewriteRule ^/?api/([^/]+)?$ api/index.php?method=$1 [L,QSA,NC]
+RewriteRule ^/?api/([^/]+)/([^/]+)?$ api/index.php?method=$2&namespace=$1 [L,QSA,NC]
+
+
+## For general files, if not above, just remove .php
+
+# Redirect external .php requests to 404 Error (Pretending that I am not doing PHP)
+RewriteCond %{THE_REQUEST} ^(.+)\.php([#?][^\ ]*)?\ HTTP/
+RewriteRule ^(.+)\.php$ "http://%{HTTP_HOST}/$1" [R=404,L]
+
+# Resolve .php file for extensionless php urls
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^([^/.]+)$ $1.php [L]
