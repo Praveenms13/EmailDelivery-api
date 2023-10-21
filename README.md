@@ -39,3 +39,13 @@ To send the new mail, submit the following data in POST method.
   "Status Code": 202
 }
 ```
+
+**Example Response 2 :**
+
+```json
+{
+    "Status": "Rate Limit Exceeded",
+    "Status Code": 429,
+    "Message": "You have exceeded the rate limit of 5 requests in 30 minutes."
+}
+```
