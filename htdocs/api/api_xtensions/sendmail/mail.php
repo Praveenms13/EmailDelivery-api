@@ -138,21 +138,21 @@ ${basename(__FILE__, ".php")} = function () {
           }
         } elseif ($request_method == "verification") {
           try {
-            $redis = new Redis();
-            $redis->connect('127.0.0.1', 6379);
+            // $redis = new Redis();
+            // $redis->connect('127.0.0.1', 6379);
 
-            $ip = $_SERVER['REMOTE_ADDR'];
-            $ip = preg_replace('/[^a-zA-Z0-9 ]/', '', $ip);
-            $ip = str_replace(' ', '', $ip);
-            $redisKey = $ip . "_sendmail";
-            $requestCount = $redis->get($redisKey);
+            // $ip = $_SERVER['REMOTE_ADDR'];
+            // $ip = preg_replace('/[^a-zA-Z0-9 ]/', '', $ip);
+            // $ip = str_replace(' ', '', $ip);
+            // $redisKey = $ip . "_sendmail";
+            // $requestCount = $redis->get($redisKey);
 
-            if ($requestCount === false || $requestCount < 5) {
-              $redis->incr($redisKey);
-              $redis->expire($redisKey, 1800);
+            // if ($requestCount === false || $requestCount < 5) {
+            //   $redis->incr($redisKey);
+            //   $redis->expire($redisKey, 1800);
+
               $secure_data = file_get_contents($_SERVER['DOCUMENT_ROOT'] . "../../SendGrid-Conf/env.json");
               $secure_data = json_decode($secure_data, true);
-
               $token = getallheaders()['Authorization'];
               if ($token != "Bearer " . $secure_data['token']) {
                 $data = [
@@ -204,7 +204,7 @@ ${basename(__FILE__, ".php")} = function () {
                 ];
                 $this->response($this->json($data), 417);
               }
-            }
+            // }
           } catch (Exception $e) {
             $data = [
               "Status" => "Internal Server Error",
