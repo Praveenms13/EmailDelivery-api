@@ -177,40 +177,39 @@ ${basename(__FILE__, ".php")} = function () {
               $email->addTo($torecieve, $username);
 
               $email->addContent("text/html", "
-                    <body>
-                            <div class='card'>
-                                <h1>Hii, $username</h1>
-                                <p>Please verify your email by clicking the link below:</p>
-                                <a href='$link'>Verify Email</a>
-                            </div>
-                        </body>
-                    ");
-            }
+                      <body>
+                              <div class='card'>
+                                  <h1>Hii, $username</h1>
+                                  <p>Please verify your email by clicking the link below:</p>
+                                  <a href='$link'>Verify Email</a>
+                              </div>
+                          </body>
+                      ");
 
-            $sendgrid = new \SendGrid($sendgrid_api_key);
-            $sendgridResponse = $sendgrid->send($email);
-            $statusCode = $sendgridResponse->statusCode();
+              $sendgrid = new \SendGrid($sendgrid_api_key);
+              $sendgridResponse = $sendgrid->send($email);
+              $statusCode = $sendgridResponse->statusCode();
 
-            if ($statusCode == 202) {
-              $data = [
-                "Status" => "Mail Sent Successfully",
-                "Status Code" => $statusCode,
-              ];
-              $this->response($this->json($data), 200);
-            } else {
-              $data = [
-                "Status" => "Mail Not Sent",
-                "Status Code" => $statusCode,
-                "Error" => $sendgridResponse->body()
-              ];
-              $this->response($this->json($data), 417);
+              if ($statusCode == 202) {
+                $data = [
+                  "Status" => "Mail Sent Successfully",
+                  "Status Code" => $statusCode,
+                ];
+                $this->response($this->json($data), 200);
+              } else {
+                $data = [
+                  "Status" => "Mail Not Sent",
+                  "Status Code" => $statusCode,
+                  "Error" => $sendgridResponse->body()
+                ];
+                $this->response($this->json($data), 417);
+              }
             }
           } catch (Exception $e) {
             $data = [
               "Status" => "Internal Server Error",
               "Status Code" => 500,
               "Error" => $e->getMessage(),
-              "Given datas" => $this->_request['data']
             ];
             $this->response($this->json($data), 500);
           }
