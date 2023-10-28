@@ -1,11 +1,8 @@
 <?php
 
 require_once("REST.api.php");
-// require_once("libs/Database.class.php");
-// require_once("libs/Signup.class.php");
-// require_once("libs/User.class.php");
-// require_once("libs/Auth.class.php");
-// require_once("libs/OAuth.class.php");
+require_once("libs/database.class.php");
+require_once("libs/mail.class.php");
 class API extends REST
 {
     private $current_call;
@@ -15,20 +12,14 @@ class API extends REST
     public function __construct()
     {
         parent::__construct();
-        // $this->dbConnect();
     }
-
-    // private function dbConnect()
-    // {
-    //     return Database::getConnection();
-    // }
 
     public function auth()
     {
         if (isset(getallheaders()['Authorization'])) {
             $token = explode(" ", getallheaders()['Authorization'])[1];
-            //$this->auth = new Auth($token);
         }
+        return $token;
     }
 
     public function isAuthenticated()
@@ -73,7 +64,7 @@ class API extends REST
             $this->$func();
         } else {
             if (isset($_GET['namespace'])) {
-                $dir = $_SERVER['DOCUMENT_ROOT'] . '/api/api_xtensions/' . $_GET['namespace'];
+                $dir = $_SERVER['DOCUMENT_ROOT'] . "/api/" . $_GET['namespace'];
                 $file = $dir . '/' . $func . '.php';
                 if (file_exists($file)) {
                     include $file;
