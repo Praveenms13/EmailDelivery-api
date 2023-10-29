@@ -2,148 +2,162 @@
 <html>
 
 <head>
-    <title>Email Delivery API</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f2f2f2;
-        }
-
-        h1 {
-            color: #333;
-        }
-
-        h2 {
-            color: #666;
-        }
-
-        li {
-            margin-bottom: 10px;
-        }
-
-        p {
-            margin-bottom: 10px;
-        }
-
-        pre {
-            background-color: #f5f5f5;
-            padding: 10px;
-        }
-
-        code {
-            font-family: Consolas, monospace;
-            font-size: 14px;
-        }
-
-        .endpoint {
-            margin-bottom: 20px;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .endpoint h2 {
-            margin-bottom: 5px;
-            color: #FF7F50;
-        }
-
-        a {
-            color: #FF7F50;
-        }
-
-        .endpoint p {
-            color: #888;
-        }
-
-        .example {
-            margin-top: 10px;
-            margin-bottom: 20px;
-        }
-
-        .get-method {
-            color: #228B22;
-        }
-
-        .request {
-            margin-top: 10px;
-            margin-bottom: 10px;
-            background-color: #f9f9f9;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        .response {
-            margin-top: 10px;
-            margin-bottom: 10px;
-            background-color: #f5f5f5;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-    </style>
+    <title>Email Delivery API Readme</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 
 <body>
-    <h1>Email Delivery API by <a href="https://www.praveenms.site">Praveen</a></h1>
-    <p>Welcome to the Email Delivery API. This API allows you to send emails from your apps or web projects by making a
-        simple post api request. Please refer to the
-        documentation below for details on how to interact with the API.</p>
-    <li>The API is rate limited to 5 requests every 30 minutes. </li>
-    <li>All user submitted data (Usernames, email, subject, message, to emails) are erased on a regular basis.</li>
-    <li>This API is just for education purposes, please don't
-        rely on it for production. </li>
-    <h2>Authentication</h2>
-    <ul>
-        <li><strong>API Key Authentication</strong> is required for the endpoint to authenticate. Ask praveen personally
-            for the API Keys.</li>
-        <li><strong>Basically a Bearer Token Authentication</strong>
-        </li>
-    </ul>
-    <br>
-    <h2>API Base URL</h2>
-    <p><strong>https://sendemailapi.praveenms.site/</strong></p>
-    </br>
-    <div class="endpoint">
-        <h2 class="get-method">POST /api/sendmail/mail</h2>
-        <p>To send the new mail, submit the following datas in POST method.</p>
-        <p><strong>Request Body:</strong></p>
-        <pre><code>{
-  "username": "The username of the user.",
-  "email": "Your email to display it in the mail sent to the recipient.",
-  "toemail": "The recipient's email.",
-  "subject": "Subject of the email.",
-  "message": "Body of the email."
-}</code></pre>
-<p><strong>Bearer Token (Get the API Key from praveen) :</strong></p>
-        <pre>
-            <img width="50%" src="apikey.png" alt="">
-        </pre>
+    <div class="container mt-5">
+        <h1>Email Delivery API Readme</h1>
 
-            </div>
-            <p><strong>Example Response 1 :</strong></p>
-            <div class="response">
-                <pre><code>{
-  "Status": "Mail Sent Successfully",
-  "Status Code": 202
-}</code></pre>
-    </div>
-    <p><strong>Example Response 2 :</strong></p>
-    <div class="response">
-        <pre><code>{
-    "Status": "Rate Limit Exceeded",
-    "Status Code": 429,
-    "Message": "You have exceeded the rate limit of 5 requests in 30 minutes."
-}</code></pre>
-    </div>
-    </div>
+        <p>This repository contains a PHP-based Email Delivery API that allows you to send different types of emails,
+            including form data, email verification links, and OTPs (One-Time Passwords) using the SendGrid API. This
+            readme file provides an overview of the API and instructions on how to use it.</p>
+
+        <h2>Table of Contents</h2>
+        <ul>
+            <li><a href="#prerequisites">Prerequisites</a></li>
+            <li><a href="#installation">Installation</a></li>
+            <li><a href="#usage">Usage</a>
+                <ul>
+                    <li><a href="#api-endpoints">API Endpoints</a></li>
+                    <li><a href="#request-methods">Request Methods</a></li>
+                </ul>
+            </li>
+            <li><a href="#configuration">Configuration</a></li>
+            <li><a href="#rate-limiting">Rate Limiting</a></li>
+            <li><a href="#error-handling">Error Handling</a></li>
+            <li><a href="#contributing">Contributing</a></li>
+            <li><a href="#license">License</a></li>
+        </ul>
+
+        <h2 id="prerequisites">Prerequisites</h2>
+        <p>Before using the Email Delivery API, you need to have the following prerequisites:</p>
+
+        <ol>
+            <li>PHP: Ensure you have PHP installed on your server or local environment.</li>
+            <li>SendGrid Account: You should have a SendGrid account and an API key for sending emails. Make sure you
+                have the SendGrid API key ready.</li>
+            <li>Web Server: You need a web server (e.g., Apache, Nginx) to host this API.</li>
+            <li>Composer: Composer is used for managing PHP dependencies. If you don't have Composer installed, you can
+                download it from <a href="https://getcomposer.org/">getcomposer.org</a>.</li>
+        </ol>
+
+        <h2 id="installation">Installation</h2>
+        <ol>
+            <li>Clone this repository to your server or local development environment.</li>
+            <li>Navigate to the project directory in your terminal and run the following command to install the required
+                dependencies using Composer:
+                <pre><code>composer install</code></pre>
+            </li>
+            <li>Set up your web server to serve this API. Ensure that the <code>public</code> directory is the document
+                root.</li>
+        </ol>
+
+        <h2 id="usage">Usage</h2>
+        <h3 id="api-endpoints">API Endpoints</h3>
+        <p>The Email Delivery API provides the following endpoints for sending different types of emails:</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Request Method</th>
+                    <th>Parameters</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>/email</td>
+                    <td>POST</td>
+                    <td>
+                        <ul>
+                            <li><code>request_method</code>: Set this to "form_data."</li>
+                            <li><code>username</code>: Sender's name.</li>
+                            <li><code>useremail</code>: Sender's email address.</li>
+                            <li><code>subject</code>: Email subject.</li>
+                            <li><code>message</code>: Email message.</li>
+                            <li><code>torecieve</code>: Recipient's email address.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>/email</td>
+                    <td>POST</td>
+                    <td>
+                        <ul>
+                            <li><code>request_method</code>: Set this to "verification."</li>
+                            <li><code>username</code>: Sender's name.</li>
+                            <li><code>subject</code>: Email subject.</li>
+                            <li><code>torecieve</code>: Recipient's email address.</li>
+                            <li><code>link</code>: Verification link.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>/email</td>
+                    <td>POST</td>
+                    <td>
+                        <ul>
+                            <li><code>request_method</code>: Set this to "otp."</li>
+                            <li><code>username</code>: Sender's name.</li>
+                            <li><code>subject</code>: Email subject.</li>
+                            <li><code>torecieve</code>: Recipient's email address.</li>
+                            <li><code>otp</code>: One-Time Password.</li>
+                        </ul>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 id="request-methods">Request Methods</h3>
+        <p>The API accepts POST requests. Make sure to set the Authorization header with the token as "Bearer
+            YOUR_API_TOKEN" for authentication.</p>
+
+        <h3 id="configuration">Configuration</h3>
+        <p>The API uses a configuration file (env.json) to store sensitive information. Ensure that you create this file
+            and provide the following configuration:</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Configuration <p>(This is taken care by the api)</p></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>token</code>: Your API token for authentication.</td>
+                </tr>
+                <tr>
+                    <td><code>sendgrid_api_key</code>: Your SendGrid API key.</td>
+                </tr>
+                <tr>
+                    <td><code>mail_acc</code>: Your SendGrid email account.</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3 id="rate-limiting">Rate Limiting</h3>
+        <p>The API implements rate limiting to prevent abuse. It limits users to 5 requests in 30 minutes. If you exceed
+            this limit, you will receive a "Rate Limit Exceeded" response.</p>
+
+        <h3 id="error-handling">Error Handling</h3>
+        <p>The API provides error handling for various scenarios, including incorrect requests, internal server errors,
+            and failed email sending. You will receive detailed error responses to help diagnose issues.</p>
+
+        <h3 id="contributing">Contributing</h3>
+        <p>Feel free to contribute to this project by opening issues, providing suggestions, or submitting pull
+            requests. Your contributions are welcome and greatly appreciated.</p>
+
+        <h3 id="license">License</h3>
+        <p>This Email Delivery API is licensed under the MIT License. You can use, modify, and distribute it according
+            to the terms of this license.</p>
+
+        <p>Thank you for using the Email Delivery API. If you encounter any issues or have questions, please don't
+            hesitate to <a href="https://github.com/Praveenms13/EmailDelivery-api">open an issue</a>.</p>
     </div>
 
+    <!-- Include Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
-<footer>
-    Copyright © <a href="https://www.praveenms.site">Praveen</a>
-</footer>
 
 </html>

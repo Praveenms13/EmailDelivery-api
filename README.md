@@ -1,51 +1,92 @@
-# Email Delivery API
+# Email Delivery API Readme
 
-Welcome to the Email Delivery API. This API allows you to send emails from your apps or web projects by making a simple post API request. Please refer to the documentation below for details on how to interact with the API.
+This repository contains a PHP-based Email Delivery API that allows you to send different types of emails, including form data, email verification links, and OTPs (One-Time Passwords) using the SendGrid API. This readme file provides an overview of the API and instructions on how to use it.
 
-- The API is rate limited to 5 requests every 30 minutes.
-- All user-submitted data (Usernames, email, subject, message, to emails) are erased on a regular basis.
-- This API is just for education purposes; please don't rely on it for production.
+## Table of Contents
 
-## Authentication
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [API Endpoints](#api-endpoints)
+  - [Request Methods](#request-methods)
+- [Configuration](#configuration)
+- [Rate Limiting](#rate-limiting)
+- [Error Handling](#error-handling)
+- [Contributing](#contributing)
+- [License](#license)
 
-- **API Key Authentication** is required for the endpoint to authenticate. Ask Praveen personally for the API Keys.
-- Basically a **Bearer Token Authentication**.
+## Prerequisites
 
-## API Base URL
+Before using the Email Delivery API, you need to have the following prerequisites:
 
-**https://sendemailapi.praveenms.site/**
+1. PHP: Ensure you have PHP installed on your server or local environment.
+2. SendGrid Account: You should have a SendGrid account and an API key for sending emails. Make sure you have the SendGrid API key ready.
+3. Web Server: You need a web server (e.g., Apache, Nginx) to host this API.
+4. Composer: Composer is used for managing PHP dependencies. If you don't have Composer installed, you can download it from [getcomposer.org](https://getcomposer.org/).
 
-## POST /api/sendmail/mail
+## Installation
 
-To send the new mail, submit the following data in POST method.
-
-**Request Body:**
-
-```json
-{
-  "username": "The username of the user.",
-  "email": "Your email to display it in the mail sent to the recipient.",
-  "toemail": "The recipient's email.",
-  "subject": "Subject of the email.",
-  "message": "Body of the email."
-}
-````
-
-**Example Response 1 :**
-
-```json
-{
-  "Status": "Mail Sent Successfully",
-  "Status Code": 202
-}
+1. Clone this repository to your server or local development environment.
+2. Navigate to the project directory in your terminal and run the following command to install the required dependencies using Composer:
+```
+composer install
 ```
 
-**Example Response 2 :**
+3. Set up your web server to serve this API. Ensure that the `public` directory is the document root.
 
-```json
-{
-    "Status": "Rate Limit Exceeded",
-    "Status Code": 429,
-    "Message": "You have exceeded the rate limit of 5 requests in 30 minutes."
-}
-```
+## Usage
+
+### API Endpoints
+
+The Email Delivery API provides the following endpoints for sending different types of emails:
+
+| Endpoint  | Request Method | Parameters                             |
+|-----------|----------------|----------------------------------------|
+| /email    | POST           | - `request_method`: Set this to "form_data."
+|           |                | - `username`: Sender's name.
+|           |                | - `useremail`: Sender's email address.
+|           |                | - `subject`: Email subject.
+|           |                | - `message`: Email message.
+|           |                | - `torecieve`: Recipient's email address.
+| /email    | POST           | - `request_method`: Set this to "verification."
+|           |                | - `username`: Sender's name.
+|           |                | - `subject`: Email subject.
+|           |                | - `torecieve`: Recipient's email address.
+|           |                | - `link`: Verification link.
+| /email    | POST           | - `request_method`: Set this to "otp."
+|           |                | - `username`: Sender's name.
+|           |                | - `subject`: Email subject.
+|           |                | - `torecieve`: Recipient's email address.
+|           |                | - `otp`: One-Time Password.
+
+### Request Methods
+
+The API accepts POST requests. Make sure to set the Authorization header with the token as "Bearer YOUR_API_TOKEN" for authentication.
+
+### Configuration
+
+The API uses a configuration file (env.json) to store sensitive information. Ensure that you create this file and provide the following configuration:
+
+| Configuration (This is taken care by the API)      |
+|---------------------------------------------------|
+| - `token`: Your API token for authentication.     |
+| - `sendgrid_api_key`: Your SendGrid API key.       |
+| - `mail_acc`: Your SendGrid email account.         |
+
+### Rate Limiting
+
+The API implements rate limiting to prevent abuse. It limits users to 5 requests in 30 minutes. If you exceed this limit, you will receive a "Rate Limit Exceeded" response.
+
+### Error Handling
+
+The API provides error handling for various scenarios, including incorrect requests, internal server errors, and failed email sending. You will receive detailed error responses to help diagnose issues.
+
+### Contributing
+
+Feel free to contribute to this project by opening issues, providing suggestions, or submitting pull requests. Your contributions are welcome and greatly appreciated.
+
+### License
+
+This Email Delivery API is licensed under the MIT License. You can use, modify, and distribute it according to the terms of this license.
+
+Thank you for using the Email Delivery API. If you encounter any issues or have questions, please don't hesitate to [open an issue](https://github.com/Praveenms13/EmailDelivery-api).

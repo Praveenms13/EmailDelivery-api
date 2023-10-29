@@ -23,10 +23,40 @@ class mail
     $this->CheckToken();
     $this->CheckReqCount();
     if ($this->_request['request_method'] == "form_data") {
+      if (isset($this->_request['username']) && isset($this->_request['useremail']) && isset($this->_request['subject']) && isset($this->_request['message']) && isset($this->_request['torecieve'])) {
+        $this->HandleFormRequest();
+      } else {
+        $data = [
+          "Status" => "Invalid Request",
+          "Status Code" => 417,
+          "Message" => "username, useremail, subject, message, torecieve are required"
+        ];
+        $this->restObj->response($this->json($data), 417);
+      }
       $this->HandleFormRequest();
     } else if ($this->_request['request_method'] == "verification") {
+      if (isset($this->_request['username']) && isset($this->_request['subject']) && isset($this->_request['torecieve']) && isset($this->_request['link'])) {
+        $this->HandleEmailVerification();
+      } else {
+        $data = [
+          "Status" => "Invalid Request",
+          "Status Code" => 417,
+          "Message" => "username, subject, torecieve, link are required"
+        ];
+        $this->restObj->response($this->json($data), 417);
+      }
       $this->HandleEmailVerification();
     } else if ($this->_request['request_method'] == "otp") {
+      if (isset($this->_request['username']) && isset($this->_request['subject']) && isset($this->_request['torecieve']) && isset($this->_request['otp'])) {
+        $this->HandleOTPRequest();
+      } else {
+        $data = [
+          "Status" => "Invalid Request",
+          "Status Code" => 417,
+          "Message" => "username, subject, torecieve are required"
+        ];
+        $this->restObj->response($this->json($data), 417);
+      }
       $this->HandleOTPRequest();
     } else {
       $data = [
@@ -233,11 +263,45 @@ class mail
   }
   private function HandleOTPRequest()
   {
-    $data = [
-      "Status" => "OTP",
-      "Status Code" => 200,
-      "OTP" => "123456"
-    ];
-    $this->restObj->response($this->json($data), 200);
+    $username = $this->_request['username'];
+    $subject = $this->_request['subject'];
+    $torecieve = $this->_request['torecieve'];
+    $otp = $this->_request['otp'];
+
+    $sendgrid_api_key = $this->returnDatas()['sendgrid_api_key'];
+    $sendgrid_email = $this->returnDatas()['mail_acc'];
+
+    $email = new \SendGrid\Mail\Mail();
+    $email->setFrom($sendgrid_email, $username);
+    $email->setSubject($subject);
+    $email->addTo($torecieve, $username);
+
+    $email->addContent("text/html", "
+                      <body>
+                              <div class='card'>
+                                  <h1>Hii, $username</h1>
+                                  <p>Your OTP is $otp</p>
+                              </div>
+                          </body>
+                      ");
+
+    $sendgrid = new \SendGrid($sendgrid_api_key);
+    $sendgridResponse = $sendgrid->send($email);
+    $statusCode = $sendgridResponse->statusCode();
+
+    if ($statusCode == 202) {
+      $data = [
+        "Status" => "Mail Sent Successfully",
+        "Status Code" => $statusCode,
+      ];
+      $this->restObj->response($this->json($data), 200);
+    } else {
+      $data = [
+        "Status" => "Mail Not Sent",
+        "Status Code" => $statusCode,
+        "Error" => $sendgridResponse->body()
+      ];
+      $this->restObj->response($this->json($data), 417);
+    }
   }
 }
