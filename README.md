@@ -1,5 +1,5 @@
 # Email Delivery API Readme
-
+### Author: [Praveen](https://praveenms.site/)
 This repository contains a PHP-based Email Delivery API that allows you to send different types of emails, including form data, email verification links, and OTPs (One-Time Passwords) using the SendGrid API. This readme file provides an overview of the API and instructions on how to use it.
 
 ## Table of Contents
@@ -37,23 +37,24 @@ composer install
 ## Usage
 
 ### API Endpoints
+##### https://sendemailapi.praveenms.site/api/sendmail/mail
 
 The Email Delivery API provides the following endpoints for sending different types of emails:
 
 | Endpoint  | Request Method | Parameters                             |
 |-----------|----------------|----------------------------------------|
-| /email    | POST           | - `request_method`: Set this to "form_data."
+| /mail    | POST           | - `request_method`: Set this to "form_data."
 |           |                | - `username`: Sender's name.
 |           |                | - `useremail`: Sender's email address.
 |           |                | - `subject`: Email subject.
 |           |                | - `message`: Email message.
 |           |                | - `torecieve`: Recipient's email address.
-| /email    | POST           | - `request_method`: Set this to "verification."
+| /mail    | POST           | - `request_method`: Set this to "verification."
 |           |                | - `username`: Sender's name.
 |           |                | - `subject`: Email subject.
 |           |                | - `torecieve`: Recipient's email address.
 |           |                | - `link`: Verification link.
-| /email    | POST           | - `request_method`: Set this to "otp."
+| /mail    | POST           | - `request_method`: Set this to "otp."
 |           |                | - `username`: Sender's name.
 |           |                | - `subject`: Email subject.
 |           |                | - `torecieve`: Recipient's email address.
