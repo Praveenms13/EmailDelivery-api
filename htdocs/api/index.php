@@ -64,7 +64,7 @@ class API extends REST
             $this->$func();
         } else {
             if (isset($_GET['namespace'])) {
-                $dir = $_SERVER['DOCUMENT_ROOT'] . "/api/" . $_GET['namespace'];
+                $dir = $_SERVER['DOCUMENT_ROOT'] . '/api/' . $_GET['namespace'];
                 $file = $dir . '/' . $func . '.php';
                 if (file_exists($file)) {
                     include $file;
@@ -128,10 +128,10 @@ class API extends REST
     //     }
     // }
 
-    private function verify()
-    {
-        include "verify.php";
-    }
+    // private function verify()
+    // {
+    //     include "verify.php";
+    // }
 
 
     /*************API SPACE END*********************/

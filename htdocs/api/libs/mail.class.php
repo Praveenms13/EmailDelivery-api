@@ -1,6 +1,4 @@
 <?php
-
-include "../REST.api.php";
 class mail
 {
   private $conn;
@@ -8,7 +6,6 @@ class mail
   private $restObj;
   public function __construct($request_datas)
   {
-
     $this->conn = Database::getConnection();
     if ($this->conn->connect_error) {
       $data = [
@@ -20,83 +17,32 @@ class mail
     }
     $this->restObj = new REST();
     $this->_request = $request_datas;
-    $this->CheckToken();
-    $this->CheckReqCount();
-    if ($this->_request['request_method'] == "form_data") {
-      if (isset($this->_request['username']) && isset($this->_request['useremail']) && isset($this->_request['subject']) && isset($this->_request['message']) && isset($this->_request['torecieve'])) {
-        $this->HandleFormRequest();
-      } else {
-        $data = [
-          "Status" => "Invalid Request",
-          "Status Code" => 417,
-          "Message" => "username, useremail, subject, message, torecieve are required"
-        ];
-        $this->restObj->response($this->json($data), 417);
-      }
-      $this->HandleFormRequest();
-    } else if ($this->_request['request_method'] == "verification") {
-      if (isset($this->_request['username']) && isset($this->_request['subject']) && isset($this->_request['torecieve']) && isset($this->_request['link'])) {
-        $this->HandleEmailVerification();
-      } else {
-        $data = [
-          "Status" => "Invalid Request",
-          "Status Code" => 417,
-          "Message" => "username, subject, torecieve, link are required"
-        ];
-        $this->restObj->response($this->json($data), 417);
-      }
-      $this->HandleEmailVerification();
-    } else if ($this->_request['request_method'] == "otp") {
-      if (isset($this->_request['username']) && isset($this->_request['subject']) && isset($this->_request['torecieve']) && isset($this->_request['otp'])) {
-        $this->HandleOTPRequest();
-      } else {
-        $data = [
-          "Status" => "Invalid Request",
-          "Status Code" => 417,
-          "Message" => "username, subject, torecieve are required"
-        ];
-        $this->restObj->response($this->json($data), 417);
-      }
-      $this->HandleOTPRequest();
-    } else {
-      $data = [
-        "Status" => "Invalid Request Method, request_method=" . $this->_request['request_method'],
-        "Request method" => "Can be either form_data or verification or otp",
-        "Status Code" => 417,
-      ];
-      $this->restObj->response($this->json($data), 417);
-    }
   }
-  private function returnDatas()
-  {
-    $secure_data = file_get_contents($_SERVER['DOCUMENT_ROOT'] . "../../SendGrid-Conf/env.json");
-    return json_decode($secure_data, true);
-  }
-  private function json($data)
-  {
-    if (is_array($data)) {
-      return json_encode($data, JSON_PRETTY_PRINT);
-    } else {
-      return "{}";
-    }
-  }
-  private function CheckReqCount()
+  public function CheckReqCount()
   {
     $ip = $_SERVER['REMOTE_ADDR'];
-    $sql = "SELECT * FROM `sendmail` WHERE `ip` = '$ip'";
-    $result = $this->conn->query($sql);
+    $current_time = date("Y-m-d H:i:s"); // Format the current time
+
+    // Use prepared statements to prevent SQL injection
+    $sql = "SELECT `req_count`, `timestamp` FROM `sendmail` WHERE `ip` = ?";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bind_param("s", $ip);
+    $stmt->execute();
+    $result = $stmt->get_result();
     if ($result->num_rows > 0) {
       $row = $result->fetch_assoc();
       $req_count = $row['req_count'];
       $last_req_time = $row['timestamp'];
-      $last_req_time = strtotime($last_req_time);
-      $current_time = strtotime(date("Y-m-d H:i:s"));
-      $diff = $current_time - $last_req_time;
-      if ($diff < 30) {
-        if ($req_count < 3) {
-          $req_count = $req_count + 1;
-          $sql = "UPDATE `sendmail` SET `req_count` = '$req_count' WHERE `ip` = '$ip'";
-          $this->conn->query($sql);
+      $diff = strtotime($current_time) - strtotime($last_req_time); // Correctly parse timestamps
+
+      if ($diff < 1800) {
+        if ($req_count < 2) {
+          // Increment req_count and update timestamp in a single query
+          $req_count++;
+          $sql = "UPDATE `sendmail` SET `req_count` = ?, `timestamp` = ? WHERE `ip` = ?";
+          $stmt = $this->conn->prepare($sql);
+          $stmt->bind_param("sss", $req_count, $current_time, $ip);
+          $stmt->execute();
         } else {
           $data = [
             "Status" => "Rate Limit Exceeded",
@@ -106,31 +52,54 @@ class mail
           $this->restObj->response($this->json($data), 429);
         }
       } else {
+        // Reset req_count and update timestamp in a single query
         $req_count = 1;
-        $sql = "UPDATE `sendmail` SET `req_count` = '$req_count' WHERE `ip` = '$ip'";
-        $this->conn->query($sql);
+        $sql = "UPDATE `sendmail` SET `req_count` = ?, `timestamp` = ? WHERE `ip` = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("sss", $req_count, $current_time, $ip);
+        $stmt->execute();
       }
     } else {
+      // Insert a new record
       $req_count = 1;
       $token = password_hash($ip . time(), PASSWORD_DEFAULT);
-      $sql = "INSERT INTO `sendmail` (`ip`, `req_count`, `token`) VALUES ('$ip', '$req_count', '$token')";
-      $this->conn->query($sql);
+      $sql = "INSERT INTO `sendmail` (`ip`, `req_count`, `timestamp`, `token`) VALUES (?, ?, ?, ?)";
+      $stmt = $this->conn->prepare($sql);
+      $stmt->bind_param("ssss", $ip, $req_count, $current_time, $token);
+      $stmt->execute();
     }
   }
-  private function CheckToken()
+  private function json($data)
   {
-    $secure_data = $this->returnDatas();
-    $token = getallheaders()['Authorization'];
-    if ($token != "Bearer " . $secure_data['token']) {
-      $data = [
-        "Status" => "Invalid Token",
-        "Given Token" => $token,
-        "Status Code" => 417,
-      ];
-      $this->restObj->response($this->json($data), 417);
+    if (is_array($data)) {
+      return json_encode($data, JSON_PRETTY_PRINT);
+    } else {
+      return "{}";
     }
   }
-  private function HandleFormRequest()
+  private function returnDatas()
+  {
+    $secure_data = file_get_contents($_SERVER['DOCUMENT_ROOT'] . "../../SendGrid-Conf/env.json");
+    $secure_data = json_decode($secure_data, true);
+    return $secure_data;
+  }
+  public function HandleFormRequest()
+  {
+    $this->formrequest();
+  }
+  public function HandleEmail()
+  {
+    $this->_email();
+  }
+  public function HandleEmailVerification()
+  {
+    $this->verifyemail();
+  }
+  public function HandleOTPRequest()
+  {
+    $this->otprequest();
+  }
+  private function formrequest()
   {
     $userName = $this->_request['username'];
     $userEmail = $this->_request['useremail'];
@@ -139,8 +108,8 @@ class mail
     $torecieve = $this->_request['torecieve'];
     $username = preg_replace('/[^a-zA-Z0-9 ]/', '', $userName);
     $userEmail = preg_replace('/[^a-zA-Z0-9@.]/', '', str_replace(' ', '', $userEmail));
-    $subject = preg_replace('/[^a-zA-Z0-9 ]/', '', $subject);
-    $message = preg_replace('/[^a-zA-Z0-9 ]/', '', $message);
+    $subject = preg_replace('/[^a-zA-Z0-9 \'"]/', '', $subject);
+    $message = preg_replace('/[^a-zA-Z0-9 \'"]/', '', $message);
 
     $sendgrid_api_key = $this->returnDatas()['sendgrid_api_key'];
     $sendgrid_email = $this->returnDatas()['mail_acc'];
@@ -217,31 +186,36 @@ class mail
       $this->restObj->response($this->json($data), 417);
     }
   }
-  private function HandleEmailVerification()
+  private function _email()
   {
-    $username = $this->_request['username'];
-    $subject = $this->_request['subject'];
     $torecieve = $this->_request['torecieve'];
-    $link = $this->_request['link'];
+    $subject = $this->_request['subject'];
+    $message = $this->_request['message'];
+    $username = $this->_request['username'];
+    $org_name = $this->_request['org_name'];
+
+    $username = preg_replace('/[^a-zA-Z0-9 ]/', '', $username);
+    $torecieve = preg_replace('/[^a-zA-Z0-9@.]/', '', str_replace(' ', '', $torecieve));
+    $subject = preg_replace('/[^a-zA-Z0-9 \'"]/', '', $subject);
+    $message = preg_replace('/[^a-zA-Z0-9 \'"]/', '', $message);
+    $org_name = preg_replace('/[^a-zA-Z0-9 \'"]/', '', $org_name);
 
     $sendgrid_api_key = $this->returnDatas()['sendgrid_api_key'];
     $sendgrid_email = $this->returnDatas()['mail_acc'];
 
     $email = new \SendGrid\Mail\Mail();
-    $email->setFrom($sendgrid_email, $username);
+    $email->setFrom($sendgrid_email, $org_name);
     $email->setSubject($subject);
-    $email->addTo($torecieve, $username);
+    $email->addTo($torecieve, $org_name);
 
     $email->addContent("text/html", "
                       <body>
                               <div class='card'>
                                   <h1>Hii, $username</h1>
-                                  <p>Please verify your email by clicking the link below:</p>
-                                  <a href='$link'>Verify Email</a>
+                                  <p>$message</p>
                               </div>
                           </body>
                       ");
-
     $sendgrid = new \SendGrid($sendgrid_api_key);
     $sendgridResponse = $sendgrid->send($email);
     $statusCode = $sendgridResponse->statusCode();
@@ -261,26 +235,87 @@ class mail
       $this->restObj->response($this->json($data), 417);
     }
   }
-  private function HandleOTPRequest()
+  private function otprequest()
   {
-    $username = $this->_request['username'];
-    $subject = $this->_request['subject'];
     $torecieve = $this->_request['torecieve'];
+    $subject = $this->_request['subject'];
+    $message = $this->_request['message'];
+    $username = $this->_request['username'];
+    $org_name = $this->_request['org_name'];
     $otp = $this->_request['otp'];
+
+    $username = preg_replace('/[^a-zA-Z0-9 ]/', '', $username);
+    $torecieve = preg_replace('/[^a-zA-Z0-9@.]/', '', str_replace(' ', '', $torecieve));
+    $subject = preg_replace('/[^a-zA-Z0-9 \'"]/', '', $subject);
+    $message = preg_replace('/[^a-zA-Z0-9 \'"]/', '', $message);
+    $org_name = preg_replace('/[^a-zA-Z0-9 \'"]/', '', $org_name);
+    $otp = preg_replace('/[^0-9]/', '', $otp);
 
     $sendgrid_api_key = $this->returnDatas()['sendgrid_api_key'];
     $sendgrid_email = $this->returnDatas()['mail_acc'];
 
     $email = new \SendGrid\Mail\Mail();
-    $email->setFrom($sendgrid_email, $username);
+    $email->setFrom($sendgrid_email, $org_name);
     $email->setSubject($subject);
-    $email->addTo($torecieve, $username);
+    $email->addTo($torecieve, $org_name);
 
     $email->addContent("text/html", "
                       <body>
                               <div class='card'>
                                   <h1>Hii, $username</h1>
-                                  <p>Your OTP is $otp</p>
+                                  <p>$message</p>
+                                  <p>OTP: $otp</p>
+                              </div>
+                          </body>
+                      ");
+    $sendgrid = new \SendGrid($sendgrid_api_key);
+    $sendgridResponse = $sendgrid->send($email);
+    $statusCode = $sendgridResponse->statusCode();
+
+    if ($statusCode == 202) {
+      $data = [
+        "Status" => "Mail Sent Successfully",
+        "Status Code" => $statusCode,
+      ];
+      $this->restObj->response($this->json($data), 200);
+    } else {
+      $data = [
+        "Status" => "Mail Not Sent",
+        "Status Code" => $statusCode,
+        "Error" => $sendgridResponse->body()
+      ];
+      $this->restObj->response($this->json($data), 417);
+    }
+  }
+  private function verifyemail()
+  {
+    $username = $this->_request['username'];
+    $subject = $this->_request['subject'];
+    $message = $this->_request['message'];
+    $torecieve = $this->_request['torecieve'];
+    $link = $this->_request['link'];
+    $org_name = $this->_request['org_name'];
+
+    $username = preg_replace('/[^a-zA-Z0-9 ]/', '', $username);
+    $torecieve = preg_replace('/[^a-zA-Z0-9@.]/', '', str_replace(' ', '', $torecieve));
+    $subject = preg_replace('/[^a-zA-Z0-9 \'"]/', '', $subject);
+    $message = preg_replace('/[^a-zA-Z0-9 \'"]/', '', $message);
+    $org_name = preg_replace('/[^a-zA-Z0-9 \'"]/', '', $org_name);
+
+    $sendgrid_api_key = $this->returnDatas()['sendgrid_api_key'];
+    $sendgrid_email = $this->returnDatas()['mail_acc'];
+
+    $email = new \SendGrid\Mail\Mail();
+    $email->setFrom($sendgrid_email, $org_name);
+    $email->setSubject($subject);
+    $email->addTo($torecieve, $org_name);
+
+    $email->addContent("text/html", "
+                      <body>
+                              <div class='card'>
+                                  <h1>Hii, $username</h1>
+                                  <p>$message</p>
+                                  <a href='$link'>Click here to verify your email</a>
                               </div>
                           </body>
                       ");

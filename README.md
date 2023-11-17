@@ -1,5 +1,7 @@
 # Email Delivery API Readme
+
 ### Author: [Praveen](https://praveenms.site/)
+
 This repository contains a PHP-based Email Delivery API that allows you to send different types of emails, including form data, email verification links, and OTPs (One-Time Passwords) using the SendGrid API. This readme file provides an overview of the API and instructions on how to use it.
 
 ## Table of Contents
@@ -28,6 +30,7 @@ Before using the Email Delivery API, you need to have the following prerequisite
 
 1. Clone this repository to your server or local development environment.
 2. Navigate to the project directory in your terminal and run the following command to install the required dependencies using Composer:
+
 ```
 composer install
 ```
@@ -37,42 +40,49 @@ composer install
 ## Usage
 
 ### API Endpoints
-##### https://sendemailapi.praveenms.site/api/sendmail/mail
+
+##### https://sendemailapi.praveenms.site/api/mail/verify
 
 The Email Delivery API provides the following endpoints for sending different types of emails:
 
-| Endpoint  | Request Method | Parameters                             |
-|-----------|----------------|----------------------------------------|
-| /mail    | POST           | - `request_method`: Set this to "form_data."
-|           |                | - `username`: Sender's name.
-|           |                | - `useremail`: Sender's email address.
-|           |                | - `subject`: Email subject.
-|           |                | - `message`: Email message.
-|           |                | - `torecieve`: Recipient's email address.
-| /mail    | POST           | - `request_method`: Set this to "verification."
-|           |                | - `username`: Sender's name.
-|           |                | - `subject`: Email subject.
-|           |                | - `torecieve`: Recipient's email address.
-|           |                | - `link`: Verification link.
-| /mail    | POST           | - `request_method`: Set this to "otp."
-|           |                | - `username`: Sender's name.
-|           |                | - `subject`: Email subject.
-|           |                | - `torecieve`: Recipient's email address.
-|           |                | - `otp`: One-Time Password.
+| Endpoint  | Request Method | Parameters                                                                          |
+| --------- | -------------- | ----------------------------------------------------------------------------------- |
+| /formdata | POST           | - `username`: Sender's name.                                                        |
+|           |                | - `useremail`: Sender's email address.                                              |
+|           |                | - `subject`: Email subject.                                                         |
+|           |                | - `message`: Email message.                                                         |
+|           |                | - `torecieve`: Recipient's email address to recieve the email.                      |
+| /infomail | POST           | - `username`: username name to whom the mail is sent.                               |
+|           |                | - `subject`: Email subject.                                                         |
+|           |                | - `message`: Email message.                                                         |
+|           |                | - `torecieve`: Recipient's email address.                                           |
+|           |                | - `org_name`: Organization or App or Website name.                                  |
+| /otp      | POST           | - `username`: Sender's name.                                                        |
+|           |                | - `subject`: Email subject.                                                         |
+|           |                | - `message`: Email message.                                                         |
+|           |                | - `torecieve`: Recipient's email address to recieve the email.                      |
+|           |                | - `otp`: One-Time Password.                                                         |
+|           |                | - `org_name`: Organization or App or Website name.                                  |
+| /verify   | POST           | - `username`: Sender's name.                                                        |
+|           |                | - `subject`: Email subject.                                                         |
+|           |                | - `message`: Email message.                                                         |
+|           |                | - `torecieve`: Recipient's email address.                                           |
+|           |                | - `link`: verification link with token. eg., https://api.verify.com/?token=sdjf5414 |
+|           |                | - `org_name`: Organization or App or Website name.                                  |
 
 ### Request Methods
 
-The API accepts POST requests. Make sure to set the Authorization header with the token as "Bearer YOUR_API_TOKEN" for authentication.
+The API accepts POST requests. Make sure to set the Authorization Type to API Key with the key Authorization and value as "Bearer YOUR_API_TOKEN" for authentication.
 
-### Configuration
+### Configuration (This is nor required to make the api req and response)
 
 The API uses a configuration file (env.json) to store sensitive information. Ensure that you create this file and provide the following configuration:
 
-| Configuration (This is taken care by the API)      |
-|---------------------------------------------------|
-| - `token`: Your API token for authentication.     |
-| - `sendgrid_api_key`: Your SendGrid API key.       |
-| - `mail_acc`: Your SendGrid email account.         |
+| Configuration (This is taken care by the API) |
+| --------------------------------------------- |
+| - `token`: Your API token for authentication. |
+| - `sendgrid_api_key`: Your SendGrid API key.  |
+| - `mail_acc`: Your SendGrid email account.    |
 
 ### Rate Limiting
 

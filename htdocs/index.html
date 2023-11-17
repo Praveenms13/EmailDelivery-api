@@ -69,42 +69,58 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>/mail</td>
+                    <td>/formdata</td>
                     <td>POST</td>
                     <td>
                         <ul>
-                            <li><code>request_method</code>: Set this to "form_data."</li>
                             <li><code>username</code>: Sender's name.</li>
                             <li><code>useremail</code>: Sender's email address.</li>
                             <li><code>subject</code>: Email subject.</li>
                             <li><code>message</code>: Email message.</li>
-                            <li><code>torecieve</code>: Recipient's email address.</li>
+                            <li><code>torecieve</code>: Recipient's email address to receive the email.</li>
                         </ul>
                     </td>
                 </tr>
                 <tr>
-                    <td>/mail</td>
+                    <td>/infomail</td>
                     <td>POST</td>
                     <td>
                         <ul>
-                            <li><code>request_method</code>: Set this to "verification."</li>
-                            <li><code>username</code>: Sender's name.</li>
+                            <li><code>username</code>: Username to whom the mail is sent.</li>
                             <li><code>subject</code>: Email subject.</li>
+                            <li><code>message</code>: Email message.</li>
                             <li><code>torecieve</code>: Recipient's email address.</li>
-                            <li><code>link</code>: Verification link.</li>
+                            <li><code>org_name</code>: Organization or App or Website name.</li>
                         </ul>
                     </td>
                 </tr>
                 <tr>
-                    <td>/mail</td>
+                    <td>/otp</td>
                     <td>POST</td>
                     <td>
                         <ul>
-                            <li><code>request_method</code>: Set this to "otp."</li>
                             <li><code>username</code>: Sender's name.</li>
                             <li><code>subject</code>: Email subject.</li>
-                            <li><code>torecieve</code>: Recipient's email address.</li>
+                            <li><code>message</code>: Email message.</li>
+                            <li><code>torecieve</code>: Recipient's email address to receive the email.</li>
                             <li><code>otp</code>: One-Time Password.</li>
+                            <li><code>org_name</code>: Organization or App or Website name.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>/verify</td>
+                    <td>POST</td>
+                    <td>
+                        <ul>
+                            <li><code>username</code>: Sender's name.</li>
+                            <li><code>subject</code>: Email subject.</li>
+                            <li><code>message</code>: Email message.</li>
+                            <li><code>torecieve</code>: Recipient's email address.</li>
+                            <li><code>link</code>: Verification link with token. e.g., <a
+                                    href="https://api.verify.com/?token=sdjf5414"
+                                    target="_blank">https://api.verify.com/?token=sdjf5414</a></li>
+                            <li><code>org_name</code>: Organization or App or Website name.</li>
                         </ul>
                     </td>
                 </tr>
@@ -112,8 +128,8 @@
         </table>
 
         <h3 id="request-methods">Request Methods</h3>
-        <p>The API accepts POST requests. Make sure to set the Authorization header with the token as "Bearer
-            YOUR_API_TOKEN" for authentication.</p>
+        <p>The API accepts POST requests. Make sure to set the Authorization Type to API Key with the key Authorization
+            and value as "Bearer YOUR_API_TOKEN" for authentication.</p>
 
         <h3 id="configuration">Configuration</h3>
         <p>The API uses a configuration file (env.json) to store sensitive information. Ensure that you create this file
