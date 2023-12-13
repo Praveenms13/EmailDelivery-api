@@ -41,7 +41,7 @@ composer install
 
 ### API Endpoints
 
-##### https://sendemailapi.praveenms.site/api/mail/verify
+##### https://sendemailapi.praveenms.site/api/mail/
 
 The Email Delivery API provides the following endpoints for sending different types of emails:
 
