@@ -25,7 +25,7 @@ ${basename(__FILE__, ".php")} = function () {
                 $data = [
                     "Status" => "Bad Request",
                     "Status Code" => 400,
-                    "Error" => "Form Datas required are username, useremail, subject, message, torecieve"
+                    "Error" => "Form Datas requires username, useremail, subject, message, torecieve"
                 ];
                 $this->response($this->json($data), 400);
             }
