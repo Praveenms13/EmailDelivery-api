@@ -47,7 +47,7 @@ class mail
           $data = [
             "Status" => "Rate Limit Exceeded",
             "Status Code" => 429,
-            "Message" => "You have exceeded the rate limit of 5 requests in 30 minutes."
+            "Message" => "You have exceeded the rate limit of 2 requests in 30 minutes."
           ];
           $this->restObj->response($this->json($data), 429);
         }
